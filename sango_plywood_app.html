@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale-1.0">
+    <title>Sàn Gỗ Plywood Kỹ Thuật</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Thêm Zalo Mini App SDK -->
+    <script src="https://zjs.zalo.me/zalo-js-sdk/1.0/zalo-miniapp-sdk.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .active-nav {
+            color: #4a5568; /* text-gray-700 */
+            font-weight: 600;
+        }
+        .nav-item {
+            transition: color 0.2s ease-in-out;
+        }
+        /* Style để giới hạn mô tả sản phẩm trong 2 dòng */
+        .line-clamp-2 {
+           overflow: hidden;
+           display: -webkit-box;
+           -webkit-box-orient: vertical;
+           -webkit-line-clamp: 2;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <div id="app" class="pb-20">
+        <!-- Nội dung Mini App sẽ được render tại đây -->
+    </div>
+
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around h-16 items-center shadow-t-lg z-20">
+        <a href="#" class="nav-item text-center text-gray-500 active-nav" data-page="home">
+            <i data-lucide="home" class="mx-auto h-6 w-6"></i>
+            <span class="text-xs font-medium">Trang chủ</span>
+        </a>
+        <a href="#" class="nav-item text-center text-gray-500" data-page="products">
+            <i data-lucide="layers-3" class="mx-auto h-6 w-6"></i>
+            <span class="text-xs font-medium">Sản phẩm</span>
+        </a>
+        <a href="#" class="nav-item text-center text-gray-500" data-page="quote">
+            <i data-lucide="notebook-pen" class="mx-auto h-6 w-6"></i>
+            <span class="text-xs font-medium">Tư vấn</span>
+        </a>
+        <a href="#" class="nav-item text-center text-gray-500" data-page="contact">
+            <i data-lucide="phone" class="mx-auto h-6 w-6"></i>
+            <span class="text-xs font-medium">Liên hệ</span>
+        </a>
+    </nav>
+
+    <!-- Nút Chat Live -->
+    <button id="live-chat-button" class="fixed bottom-20 right-4 bg-blue-600 rounded-full p-3 shadow-xl cursor-pointer z-30 flex items-center justify-center hover:bg-blue-700 transition-transform transform hover:scale-110">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>
+    </button>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DỮ LIỆU SẢN PHẨM ---
+            const PRODUCTS = [
+                // Biệt Thự & Nhà Phố Cao Cấp
+                { id: 2, name: 'Sàn gỗ Plywood mặt Óc Chó', price: '1.450.000đ/m²', image: 'https://images.unsplash.com/photo-1505873242700-f289a29e1e0f?q=80&w=2070&auto=format&fit=crop', usageCategory: 'Biệt Thự & Nhà Phố Cao Cấp', description: 'Vân gỗ Óc Chó sang trọng cùng tông màu nâu socola ấm áp tạo nên đẳng cấp khác biệt cho không gian.', specs: { 'Lớp mặt': 'Gỗ Óc Chó (Walnut) Mỹ dày 3mm', 'Cốt ván': 'Plywood Eucalyptus', 'Độ dày': '18mm', 'Kích thước': '180mm x 1800mm', 'Bề mặt': 'Sơn UV mờ', 'Tiêu chuẩn': 'CARB P2 / E0' }, origin: 'Mỹ', promotion: 'Tặng xốp lót' },
+                { id: 5, name: 'Sàn Plywood Xương Cá Sồi', price: '1.250.000đ/m²', image: 'https://images.unsplash.com/photo-1588414051034-7a01d51f3d32?q=80&w=2070&auto=format&fit=crop', usageCategory: 'Biệt Thự & Nhà Phố Cao Cấp', description: 'Kiểu lát xương cá cổ điển kết hợp với vân gỗ sồi tự nhiên, tạo điểm nhấn nghệ thuật độc đáo.', specs: { 'Lớp mặt': 'Gỗ Sồi (Oak) 3mm', 'Cốt ván': 'Plywood Birch', 'Độ dày': '15mm', 'Kích thước': '90mm x 600mm', 'Bề mặt': 'Sơn UV mờ', 'Tiêu chuẩn': 'E0' }, origin: 'Nga', promotion: 'Giảm 5%' },
+                { id: 7, name: 'Sàn Plywood Sồi Hun Khói', price: '1.150.000đ/m²', image: 'https://images.unsplash.com/photo-1589802924151-85b546cd93f0?q=80&w=1974&auto=format&fit=crop', usageCategory: 'Biệt Thự & Nhà Phố Cao Cấp', description: 'Công nghệ hun khói làm sậm màu gỗ sồi một cách tự nhiên, tạo ra chiều sâu và vẻ đẹp mộc mạc.', specs: { 'Lớp mặt': 'Gỗ Sồi hun khói 3mm', 'Cốt ván': 'Plywood Birch', 'Độ dày': '15mm', 'Kích thước': '190mm x 1900mm', 'Bề mặt': 'Sơn dầu tự nhiên', 'Tiêu chuẩn': 'E0' }, origin: 'Châu Âu', promotion: null },
+                { id: 8, name: 'Sàn Plywood Gõ Đỏ Nam Phi', price: '1.800.000đ/m²', image: 'https://images.unsplash.com/photo-1593575971160-5a3dcf10a266?q=80&w=1964&auto=format&fit=crop', usageCategory: 'Biệt Thự & Nhà Phố Cao Cấp', description: 'Màu đỏ sậm sang trọng và vân gỗ xoáy đặc trưng của Gõ Đỏ, thể hiện đẳng cấp hoàng gia.', specs: { 'Lớp mặt': 'Gỗ Gõ Đỏ 3mm', 'Cốt ván': 'Plywood Hardwood', 'Độ dày': '18mm', 'Kích thước': '120mm x 900mm', 'Bề mặt': 'Sơn UV bóng 75%', 'Tiêu chuẩn': 'E1' }, origin: 'Nam Phi', promotion: null },
+                // ... Thêm các sản phẩm khác nếu cần
+            ];
+            
+            // --- DỮ LIỆU BẢN TIN ---
+            const NEWS_ARTICLES = [
+                {
+                    id: 1,
+                    title: '5 Lợi Ích Vượt Trội Của Sàn Gỗ Kỹ Thuật Plywood',
+                    image: 'https://images.unsplash.com/photo-1600121848594-d8644e57abab?q=80&w=2070&auto=format&fit=crop',
+                    summary: 'Khám phá tại sao sàn gỗ kỹ thuật Plywood đang là xu hướng vật liệu lát sàn được ưa chuộng nhất hiện nay.'
+                },
+                {
+                    id: 2,
+                    title: 'Hướng Dẫn Bảo Dưỡng Sàn Gỗ Plywood Đúng Cách',
+                    image: 'https://images.unsplash.com/photo-1594013436353-a4e3a812239f?q=80&w=1974&auto=format&fit=crop',
+                    summary: 'Để sàn nhà bạn luôn bền đẹp như mới, hãy tham khảo các mẹo bảo dưỡng đơn giản nhưng hiệu quả dưới đây.'
+                },
+            ];
+
+            // --- DỮ LIỆU CÔNG TRÌNH ---
+            const COMPLETED_PROJECTS = [
+                { id: 1, name: 'Biệt thự VinHomes Riverside', image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2070&auto=format&fit=crop' },
+                { id: 2, name: 'Khách sạn JW Marriott Hà Nội', image: 'https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?q=80&w=2070&auto=format&fit=crop' }
+            ];
+
+            const state = {
+                currentPage: 'home',
+                selectedProductId: null,
+            };
+
+            const app = document.getElementById('app');
+            const navLinks = document.querySelectorAll('.nav-item');
+            
+            function renderHomePage() {
+                return `
+                    <div class="space-y-4">
+                        <header class="p-4">
+                            <h1 class="text-3xl font-bold text-gray-800">Sàn Gỗ Plywood</h1>
+                            <p class="text-gray-500">Giải pháp bền vững cho ngôi nhà của bạn</p>
+                        </header>
+                        
+                        <div class="p-4 pt-0 grid grid-cols-2 gap-6">
+                            <!-- LEFT COLUMN -->
+                            <div class="space-y-6">
+                                <!-- VIDEO SECTION -->
+                                <div>
+                                     <h2 class="text-lg font-bold text-gray-800 mb-3">Video Giới Thiệu</h2>
+                                     <div id="video-player" class="relative bg-black rounded-xl shadow-lg overflow-hidden cursor-pointer aspect-video w-full" style="background-image: url('https://images.unsplash.com/photo-1560114928-40f1f1eb26a0?q=80&w=2070&auto=format&fit=crop'); background-size: cover; background-position: center;">
+                                         <div class="absolute inset-0 bg-black bg-opacity-40"></div>
+                                         <div class="relative z-10 h-full flex items-center justify-center">
+                                            <div class="bg-white/30 backdrop-blur-sm rounded-full h-12 w-12 flex items-center justify-center">
+                                                <i data-lucide="play" class="h-6 w-6 text-white ml-1"></i>
+                                            </div>
+                                         </div>
+                                     </div>
+                                </div>
+                                <!-- COMPLETED PROJECTS SECTION -->
+                                <div>
+                                    <h2 class="text-lg font-bold text-gray-800 mb-3">Công Trình Đã Thi Công</h2>
+                                    <div class="space-y-3">
+                                        ${COMPLETED_PROJECTS.map(project => `
+                                            <div class="bg-white rounded-lg shadow-sm overflow-hidden" data-id="${project.id}">
+                                                <img src="${project.image}" class="h-24 w-full object-cover">
+                                                <div class="p-2">
+                                                    <h3 class="font-semibold text-xs text-gray-700 truncate">${project.name}</h3>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- RIGHT COLUMN -->
+                            <div class="space-y-6">
+                                <!-- FEATURED PRODUCTS SECTION -->
+                                <div>
+                                    <h2 class="text-lg font-bold text-gray-800 mb-3">Sản phẩm nổi bật</h2>
+                                    <div class="space-y-3">
+                                        ${PRODUCTS.slice(0,2).map(p => `
+                                            <div class="bg-white rounded-lg shadow-sm overflow-hidden product-card" data-id="${p.id}">
+                                                <div class="relative">
+                                                    <img src="${p.image}" class="h-24 w-full object-cover">
+                                                     ${p.promotion ? `<span class="absolute top-1.5 left-1.5 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">${p.promotion}</span>` : ''}
+                                                </div>
+                                                <div class="p-2">
+                                                    <h3 class="font-semibold text-xs text-gray-700 truncate">${p.name}</h3>
+                                                    <p class="text-blue-700 font-bold text-xs mt-1">${p.price}</p>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+
+                                <!-- NEWS SECTION -->
+                                <div>
+                                    <h2 class="text-lg font-bold text-gray-800 mb-3">Bản Tin & Tư Vấn</h2>
+                                    <div class="space-y-3">
+                                        ${NEWS_ARTICLES.map(article => `
+                                            <div class="bg-white rounded-lg shadow-sm overflow-hidden" data-id="${article.id}">
+                                                <img src="${article.image}" class="h-24 w-full object-cover">
+                                                <div class="p-2">
+                                                    <h3 class="font-semibold text-xs text-gray-800 line-clamp-2">${article.title}</h3>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function renderProductsPage() {
+                 const groupedProducts = PRODUCTS.reduce((acc, product) => {
+                    const category = product.usageCategory || 'Sản phẩm khác';
+                    if (!acc[category]) {
+                        acc[category] = [];
+                    }
+                    acc[category].push(product);
+                    return acc;
+                }, {});
+
+                const categoriesOrder = ['Biệt Thự & Nhà Phố Cao Cấp', 'Căn Hộ Hiện Đại', 'Dự Án & Công Trình', 'Giải Pháp Đặc Thù'];
+
+                let html = `<div class="p-4">
+                                <h1 class="text-3xl font-bold text-gray-800 mb-6">Thư viện Sàn Gỗ</h1>
+                            `;
+
+                categoriesOrder.forEach(category => {
+                    if (groupedProducts[category]) {
+                        html += `
+                            <div class="mb-8">
+                                <h2 class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-300">${category}</h2>
+                                <div class="grid grid-cols-2 gap-4">
+                                    ${groupedProducts[category].map(p => `
+                                        <div class="bg-white rounded-lg shadow-sm overflow-hidden product-card flex flex-col h-full" data-id="${p.id}">
+                                            <div class="relative">
+                                                <img src="${p.image}" class="h-32 w-full object-cover">
+                                                ${p.promotion ? `<span class="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">${p.promotion}</span>` : ''}
+                                            </div>
+                                            <div class="p-3 flex flex-col flex-grow">
+                                                <h3 class="font-semibold text-sm text-gray-800 mb-2">${p.name}</h3>
+                                                <div class="text-xs text-gray-600 space-y-1 mb-2">
+                                                    <div class="flex items-center"><i data-lucide="ruler" class="w-3.5 h-3.5 mr-1.5 flex-shrink-0"></i><span>${p.specs['Kích thước']}</span></div>
+                                                    <div class="flex items-center"><i data-lucide="layers" class="w-3.5 h-3.5 mr-1.5 flex-shrink-0"></i><span>${p.specs['Độ dày']}</span></div>
+                                                    <div class="flex items-center"><i data-lucide="globe" class="w-3.5 h-3.5 mr-1.5 flex-shrink-0"></i><span>Xuất xứ: ${p.origin}</span></div>
+                                                </div>
+                                                <p class="text-blue-700 font-bold text-base mt-auto pt-2">${p.price}</p>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+
+                html += '</div>';
+                return html;
+            }
+
+            function renderProductDetailPage(productId) {
+                const product = PRODUCTS.find(p => p.id === productId);
+                if (!product) return renderProductsPage();
+                
+                return `
+                    <div>
+                        <div class="relative">
+                           <button class="absolute top-4 left-4 bg-white/80 rounded-full p-2 z-10 back-btn shadow">
+                                <i data-lucide="arrow-left" class="h-6 w-6 text-gray-700"></i>
+                           </button>
+                           <img src="${product.image}" class="w-full h-64 object-cover">
+                           ${product.promotion ? `<span class="absolute bottom-4 right-4 bg-red-500 text-white text-sm font-bold px-3 py-1.5 rounded-full shadow-lg">${product.promotion}</span>` : ''}
+                        </div>
+                        <div class="p-4 bg-white rounded-t-2xl -mt-4 relative">
+                            <span class="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded-full mb-2">${product.usageCategory}</span>
+                            <h1 class="text-3xl font-bold text-gray-800">${product.name}</h1>
+                            <p class="text-2xl font-bold text-blue-700 my-2">${product.price}</p>
+                            <p class="text-gray-600 leading-relaxed my-4">${product.description}</p>
+                            
+                            <h2 class="text-xl font-bold text-gray-800 mb-3 border-t pt-4 mt-4">Thông số kỹ thuật</h2>
+                            <div class="space-y-2 text-sm">
+                                ${Object.entries(product.specs).map(([key, value]) => `
+                                    <div class="flex justify-between text-gray-600 border-b pb-2">
+                                        <span class="font-medium text-gray-700">${key}:</span>
+                                        <span class="text-right">${value}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+
+                            <button class="w-full bg-blue-600 text-white font-bold py-4 rounded-lg mt-8 hover:bg-blue-700 transition-colors request-quote-btn">
+                                Yêu Cầu Tư Vấn & Báo Giá
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function renderQuotePage() {
+                return `
+                    <div class="p-4">
+                        <h1 class="text-3xl font-bold text-gray-800 mb-2">Yêu cầu tư vấn</h1>
+                        <p class="text-gray-500 mb-6">Để lại thông tin, chuyên viên của chúng tôi sẽ liên hệ lại để tư vấn chi tiết về sản phẩm và báo giá.</p>
+                        <form id="quote-form" class="space-y-4">
+                             <div>
+                                <label for="name" class="block text-sm font-medium text-gray-700">Họ và tên</label>
+                                <input type="text" id="name" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label for="phone" class="block text-sm font-medium text-gray-700">Số điện thoại Zalo</label>
+                                <input type="tel" id="phone" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label for="notes" class="block text-sm font-medium text-gray-700">Nhu cầu của bạn</label>
+                                <textarea id="notes" rows="4" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Ví dụ: Tôi quan tâm sàn gỗ Plywood Sồi cho phòng khách 30m²..."></textarea>
+                            </div>
+                            <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                                Gửi Yêu Cầu Ngay
+                            </button>
+                        </form>
+                    </div>
+                `;
+            }
+
+            function renderContactPage() {
+                return `
+                    <div class="p-4">
+                        <h1 class="text-3xl font-bold text-gray-800 mb-6">Thông tin liên hệ</h1>
+                        <div class="bg-white p-6 rounded-lg shadow-sm space-y-4">
+                            <div class="flex items-center">
+                               <i data-lucide="phone" class="h-5 w-5 text-blue-600 mr-3"></i>
+                               <span class="text-gray-700 font-medium">Hotline: 0912.345.678</span>
+                            </div>
+                            <div class="flex items-center">
+                               <i data-lucide="mail" class="h-5 w-5 text-blue-600 mr-3"></i>
+                               <span class="text-gray-700 font-medium">Email: info@plywoodflooring.vn</span>
+                            </div>
+                            <div class="flex items-start">
+                               <i data-lucide="map-pin" class="h-5 w-5 text-blue-600 mr-3 mt-1"></i>
+                               <span class="text-gray-700 font-medium">Showroom: 456 Đường DEF, Phường LMN, Quận 3, TP. Hồ Chí Minh</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            function render() {
+                let content = '';
+                if (state.currentPage === 'home') content = renderHomePage();
+                else if (state.currentPage === 'products') content = renderProductsPage();
+                else if (state.currentPage === 'quote') content = renderQuotePage();
+                else if (state.currentPage === 'contact') content = renderContactPage();
+                else if (state.currentPage === 'productDetail' && state.selectedProductId) content = renderProductDetailPage(state.selectedProductId);
+                
+                app.innerHTML = content;
+                lucide.createIcons();
+                
+                navLinks.forEach(link => {
+                    link.classList.toggle('active-nav', link.dataset.page === state.currentPage);
+                });
+            }
+
+            // --- LOGIC SỰ KIỆN ---
+
+            document.querySelector('nav').addEventListener('click', (e) => {
+                const navLink = e.target.closest('.nav-item');
+                if (navLink) {
+                    e.preventDefault();
+                    state.currentPage = navLink.dataset.page;
+                    state.selectedProductId = null;
+                    window.scrollTo(0,0);
+                    render();
+                }
+            });
+
+            app.addEventListener('click', (e) => {
+                const productCard = e.target.closest('.product-card');
+                if (productCard) {
+                    state.currentPage = 'productDetail';
+                    state.selectedProductId = parseInt(productCard.dataset.id);
+                    window.scrollTo(0,0);
+                    render();
+                    return;
+                }
+                
+                const backButton = e.target.closest('.back-btn');
+                if (backButton) {
+                    state.currentPage = 'products';
+                    state.selectedProductId = null;
+                    window.scrollTo(0,0);
+                    render();
+                    return;
+                }
+
+                const requestQuoteButton = e.target.closest('.request-quote-btn');
+                if (requestQuoteButton) {
+                    state.currentPage = 'quote';
+                    state.selectedProductId = null;
+                    window.scrollTo(0,0);
+                    render();
+                }
+
+                // Logic for Video Player
+                const videoPlayer = e.target.closest('#video-player');
+                if (videoPlayer) {
+                    // QUAN TRỌNG: Thay thế bằng link video Zalo của bạn
+                    const zaloVideoUrl = 'https://zalo.me/s/xxxxxxxx'; // Ví dụ
+                    
+                    if (typeof zmp !== 'undefined') {
+                         zmp.openUrl({
+                            url: zaloVideoUrl,
+                            success: () => {},
+                            fail: (err) => console.error(err)
+                        });
+                    } else {
+                        alert('Chức năng xem video chỉ hoạt động trong Zalo Mini App.');
+                        // Fallback cho trình duyệt web
+                        // window.open(zaloVideoUrl, '_blank');
+                    }
+                }
+            });
+
+            app.addEventListener('submit', (e) => {
+                if (e.target.id === 'quote-form') {
+                    e.preventDefault();
+                    const name = document.getElementById('name').value;
+                    alert(`Cảm ơn ${name}! Yêu cầu của bạn đã được gửi. Chúng tôi sẽ liên hệ lại trong thời gian sớm nhất.`);
+                    e.target.reset();
+                }
+            });
+            
+            // --- LOGIC CHO NÚT CHAT LIVE ---
+            const chatButton = document.getElementById('live-chat-button');
+            if (chatButton) {
+                chatButton.addEventListener('click', () => {
+                    // QUAN TRỌNG: Thay thế giá trị dưới đây bằng ID của Zalo Official Account của bạn
+                    const ZALO_OA_ID = 'DÁN_ID_ZALO_OA_CỦA_BẠN_VÀO_ĐÂY'; 
+                    
+                    if (typeof zmp === 'undefined') {
+                        alert('Không thể mở Zalo Chat. Vui lòng thử lại sau.');
+                        return;
+                    }
+
+                    // Gọi API của Zalo Mini App SDK để mở cửa sổ chat
+                    zmp.openChat({
+                        type: 'oa',
+                        id: ZALO_OA_ID,
+                        message: 'Chào bạn, tôi quan tâm đến sản phẩm sàn gỗ Plywood.', // Tin nhắn soạn sẵn
+                        success: () => {}, // Callback khi thành công
+                        fail: (err) => { // Callback khi thất bại
+                            console.error(err);
+                            alert('Đã có lỗi xảy ra khi mở cửa sổ chat. Vui lòng đảm bảo bạn đang dùng ứng dụng Zalo.');
+                        }
+                    });
+                });
+            }
+            
+            render();
+        });
+    </script>
+</body>
+</html>
+
